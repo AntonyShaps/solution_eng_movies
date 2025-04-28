@@ -18,7 +18,7 @@
   
     ### project structure
     ```bash
-    solution_eng_movies/
+    solution_eng_movies/ml-25m
     ├── README.md
     ├── .gitignore
     ├── yourSolution.ipynb
