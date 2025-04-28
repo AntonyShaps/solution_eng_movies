@@ -20,6 +20,7 @@
     ```bash
     solution_eng_movies/ml-25m
     ├── README.md
+    ├── requirements.txt
     ├── .gitignore
     ├── yourSolution.ipynb
     ├── movies-database/
