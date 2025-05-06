@@ -176,3 +176,4 @@ cython_debug/
 # Movies files
 movies-database/
 movies-database.*
+movies_ratings_tags_missingids.csv
