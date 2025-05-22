@@ -1,20 +1,34 @@
 import streamlit as st
 import pandas as pd
-
-# Sample movie data
-movies = [
-    {"title": "Inception", "rating": 8.8, "genre": "Sci-Fi", "image": "https://m.media-amazon.com/images/M/MV5BMjAxMzY3NjcxNF5BMl5BanBnXkFtZTcwNTI5OTM0Mw@@._V1_FMjpg_UX1000_.jpg"},
-    {"title": "Interstellar", "rating": 8.6, "genre": "Sci-Fi", "image": "https://upload.wikimedia.org/wikipedia/en/b/bc/Interstellar_film_poster.jpg"},
-    {"title": "The Dark Knight", "rating": 9.0, "genre": "Action", "image": "https://m.media-amazon.com/images/M/MV5BMTMxNTMwODM0NF5BMl5BanBnXkFtZTcwODAyMTk2Mw@@._V1_FMjpg_UX1000_.jpg"},
-    {"title": "Tenet", "rating": 7.5, "genre": "Action", "image": "https://m.media-amazon.com/images/M/MV5BMTU0ZjZlYTUtYzIwMC00ZmQzLWEwZTAtZWFhMWIwYjMxY2I3XkEyXkFqcGc@._V1_FMjpg_UX1000_.jpg"},
-    {"title": "Coco", "rating": 8.4, "genre": "Animation", "image": "https://lumiere-a.akamaihd.net/v1/images/p_coco_19736_fd5fa537.jpeg"},
-    {"title": "Up", "rating": 8.2, "genre": "Animation", "image": "https://upload.wikimedia.org/wikipedia/en/0/05/Up_%282009_film%29.jpg"},
-]
-
-df = pd.DataFrame(movies)
+from dataLoader import movieLoader
 
 st.set_page_config(layout="wide", page_title="MovieStream", page_icon="🎬")
 st.markdown("<h1 style='text-align: center;'>🎬 MovieStream</h1>", unsafe_allow_html=True)
+
+mLoader = movieLoader()
+
+
+# Placeholder container
+placeholder = st.empty()
+
+# Show loading message/GIF in the placeholder
+with placeholder.container():
+    st.markdown("### Loading movie data...")
+    st.markdown("<img src='https://media.giphy.com/media/y1ZBcOGOOtlpC/giphy.gif' width='200'>", unsafe_allow_html=True)
+
+# Run your actual loading function
+mLoader.load()
+
+# Hide the container
+placeholder.empty()
+
+mLoader.load()
+
+
+
+
+
+
 
 # --- Search Bar ---
 def update_search():
@@ -28,31 +42,77 @@ st.text_input(
 )
 
 search_value = st.session_state.get("search_value", "")
-filtered_df = df[df["title"].str.contains(search_value, case=False)] if search_value else df
+filtered_df = mLoader.movies[mLoader.movies["title"].str.contains(search_value, case=False)].sort_values(by="count", ascending=False) if search_value else mLoader.movies
 
-# --- Featured Movies ---
-st.markdown("### 🔥 Featured")
-with st.container():
-    cols = st.columns(len(filtered_df.head(6)))
-    for col, row in zip(cols, filtered_df.head(6).itertuples()):
-        with col:
-            st.markdown(f"<img src='{row.image}' style='width:150px; border-radius:10px;'/>", unsafe_allow_html=True)
-            st.markdown(f"**{row.title}**")
-            st.markdown(f"⭐ {row.rating}")
+st.markdown("""
+<style>
+.movie-container {
+    display: flex;
+    overflow-x: auto;
+    padding-bottom: 10px;
+    scroll-behavior: smooth;
+}
+.movie-card {
+    flex: 0 0 16.5%;
+    margin: 0 10px;
+    background-color: #1e1e1e;
+    border-radius: 10px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+.movie-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 16px rgba(0,0,0,0.5);
+}
+.movie-img {
+    width: 100%;
+    height: 240px;
+    border-top-left-radius: 10px;
+    border-top-right-radius: 10px;
+    background-size: cover;
+    background-position: center;
+}
+.movie-content {
+    padding: 10px;
+    color: white;
+    text-align: center;
+}
+.movie-title {
+    font-size: 15px;
+    font-weight: bold;
+    margin-bottom: 5px;
+}
+.movie-meta {
+    font-size: 13px;
+    color: #bbbbbb;
+}
+</style>
+""", unsafe_allow_html=True)
 
-st.markdown("---")
+# Build HTML
+html = '<div class="movie-container">'
+for movie in filtered_df.head(10).itertuples():
+    year = str(int(movie.year)) if not pd.isna(movie.year) else "-"
+    rating = f"⭐ {round(movie.avgRating, 1)}" if not pd.isna(movie.avgRating) else "unrated"
 
-# --- Genre Sections ---
-genres = df["genre"].unique()
-for genre in genres:
-    st.markdown(f"## 🎞️ {genre}")
-    genre_movies = df[df["genre"] == genre]
+    
+    img_url = mLoader.loadPicture(movie.movieId, movie.imdbId, movie.tmdbId)
+    
+    html += f"""
+    <div class="movie-card">
+        <div class="movie-img" style="background-image: url('{img_url}');"></div>
+        <div class="movie-content">
+            <div class="movie-title">{movie.title}</div>
+            <div class="movie-meta">
+                {year} &bull;
+                {rating}
+            </div>
+        </div>
+    </div>
+    """
 
-    scroll_container = st.container()
-    with scroll_container:
-        cols = st.columns(len(genre_movies))
-        for col, row in zip(cols, genre_movies.itertuples()):
-            with col:
-                st.markdown(f"<img src='{row.image}' style='width:150px; border-radius:10px;'/>", unsafe_allow_html=True)
-                st.markdown(f"**{row.title}**")
-                st.markdown(f"⭐ {row.rating}")
+
+html += '</div>'
+
+# Render it
+st.html(html)
