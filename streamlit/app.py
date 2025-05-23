@@ -42,7 +42,9 @@ st.text_input(
 )
 
 search_value = st.session_state.get("search_value", "")
-filtered_df = mLoader.movies[mLoader.movies["title"].str.contains(search_value, case=False)].sort_values(by="count", ascending=False) if search_value else mLoader.movies
+filtered_df = mLoader.movies[mLoader.movies["title"].str.contains(search_value, case=False)] if search_value else mLoader.movies
+
+filtered_df.sort_values(by="count", ascending=False, inplace=True)
 
 st.markdown("""
 <style>
@@ -94,10 +96,11 @@ html = '<div class="movie-container">'
 for movie in filtered_df.head(10).itertuples():
     year = str(int(movie.year)) if not pd.isna(movie.year) else "-"
     rating = f"⭐ {round(movie.avgRating, 1)}" if not pd.isna(movie.avgRating) else "unrated"
+    if movie.img == "" or pd.isna(movie.img) or pd.isnull(movie.img):
+        img_url = mLoader.loadPicture(movie.movieId, movie.imdbId, movie.tmdbId)
+    else:
+        img_url = movie.img
 
-    
-    img_url = mLoader.loadPicture(movie.movieId, movie.imdbId, movie.tmdbId)
-    
     html += f"""
     <div class="movie-card">
         <div class="movie-img" style="background-image: url('{img_url}');"></div>

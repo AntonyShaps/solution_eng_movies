@@ -4,12 +4,29 @@ import re
 import os
 
 
+
+
+'''
+class userLoader: 
+
+    def __init__(self):
+        self.currentUser = ""
+        self.availableUsers = []
+        self.userFile = "../movies-database/transformedFiles/userList.csv"
+        self.userRating = "../movies-database/transformedFiles/userRating.csv"
+
+    def loadUser(self):
+        self.availableUsers = pd.read_csv(self.userFile)
+'''
+
 class movieLoader:
 
     def __init__(self):
         self.movies = []
         self.key = "352fb6cebe850dcd6a8414d4a54a7abd"
         self.dataPath = "../movies-database/transformedFiles/movieData.csv"
+        self.changes = 0
+        self.saveMargin = 10
 
     def extract_year(self, title):
         match = re.search(r"\((\d{4})\)$", title)
@@ -28,11 +45,8 @@ class movieLoader:
                     return f"{article} {name}"
         return title
     
-    
 
     def load(self):
-        
-
         if os.path.exists(self.dataPath):
             self.movies = pd.read_csv(self.dataPath)
             return
@@ -67,11 +81,18 @@ class movieLoader:
         self.movies = movies
         self.saveMovies()
 
+    def checkSave(self):
+        self.changes += 1
+        print(f"checking save {self.changes}")
+        if self.changes >= self.saveMargin:
+            print(f"saving Movies {self.changes}")
+            self.saveMovies()
 
     def saveMovies(self):
         # Save for future use
         os.makedirs("../movies-database/transformedFiles", exist_ok=True)
         self.movies.to_csv(self.dataPath, index=False)
+        self.changes = 0
 
     def loadPicture(self, movieId, imdbid, tmdbid):
         url = f"https://api.themoviedb.org/3/find/{imdbid}"
@@ -86,7 +107,7 @@ class movieLoader:
             poster_path = data["movie_results"][0]["poster_path"]
             full_url = f"https://image.tmdb.org/t/p/w500{poster_path}"
             self.movies.loc[self.movies["movieId"] == movieId, "img"] = full_url
-            print(full_url)
+            self.checkSave()
             return full_url
 
         except:
@@ -98,8 +119,9 @@ class movieLoader:
                 poster_path = data["poster_path"]
                 full_url = f"https://image.tmdb.org/t/p/w500{poster_path}"
                 self.movies.loc[self.movies["movieId"] == movieId, "img"] = full_url
-                print(full_url)
+                self.checkSave()
                 return full_url
+            
             except Exception as e:
                 print(f"[Poster Error] movieId={movieId}, imdbId={imdbid}, tmdbId={tmdbid}")
                 print(f"[Exception] {type(e).__name__}: {e}")
