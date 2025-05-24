@@ -17,8 +17,8 @@ with placeholder.container():
 
 # Run your actual loading function
 mLoader.load()
-ratings = pd.read_csv("../movies-database/ml-25m/ratings.csv")
-mLoader.ratings = ratings
+#ratings = pd.read_csv("../movies-database/ml-25m/ratings.csv")
+#mLoader.ratings = ratings
 
 # Hide the container
 placeholder.empty()

@@ -3,9 +3,12 @@ import pandas as pd
 import json
 from pathlib import Path
 from surprise import Dataset, Reader, SVD
+import dataLoader
+
 st.set_page_config(page_title="Graph", page_icon="🕸️")
 
 st.title("Recommendations")
+
 if "mLoader" not in st.session_state:
     st.warning("Please go to homepage to load the data")
 else:
@@ -50,7 +53,11 @@ else:
         with st.container():
             cols = st.columns([1, 4])
             with cols[0]:
-                st.image(row["img"] if pd.notna(row["img"]) and row["img"] != "" else "https://via.placeholder.com/150x220?text=No+Image", width=120)
+                if pd.isna(row["img"]) or row["img"] == "":
+                    img = st.session_state.mLoader.loadPicture(row["movieId"], row["imdbId"], row["tmdbId"])
+                else:
+                    img = row["img"]
+                st.image(img, width=120)
             with cols[1]:
                 st.subheader(row["title"])
                 st.markdown(f"**Predicted Rating:** ⭐ {round(row['predicted_rating'], 2)}")

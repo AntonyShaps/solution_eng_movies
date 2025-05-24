@@ -25,7 +25,7 @@ class movieLoader:
         self.movies = []
         self.ratings = []
         self.key = "352fb6cebe850dcd6a8414d4a54a7abd"
-        self.dataPath = "../movies-database/transformedFiles/movieData.csv"
+        self.dataPath = "./dataFiles/movieData.csv"
         self.changes = 0
         self.saveMargin = 100
 
@@ -50,6 +50,8 @@ class movieLoader:
     def load(self):
         if os.path.exists(self.dataPath):
             self.movies = pd.read_csv(self.dataPath)
+            if self.ratings == []:
+                self.ratings = pd.read_csv("../movies-database/ml-25m/ratings.csv")
             return
 
         # Load raw data
@@ -60,6 +62,7 @@ class movieLoader:
 
         links = pd.read_csv("../movies-database/ml-25m/links.csv")
         ratings = pd.read_csv("../movies-database/ml-25m/ratings.csv")
+
         # Merge movie info with links (left keeps all movies, right would filter)
         movies = pd.merge(mov, links, how="left", on="movieId")
 
@@ -76,6 +79,7 @@ class movieLoader:
         # Merge with ratings
         movies = pd.merge(movies, ratings_summary, how="left", on="movieId")
         movies["img"] = "" 
+        movies["img"] = movies["img"].astype("object")
 
 
         self.movies = movies
@@ -91,7 +95,7 @@ class movieLoader:
 
     def saveMovies(self):
         # Save for future use
-        os.makedirs("../movies-database/transformedFiles", exist_ok=True)
+        os.makedirs("./dataFiles", exist_ok=True)
         self.movies.to_csv(self.dataPath, index=False)
         self.changes = 0
 

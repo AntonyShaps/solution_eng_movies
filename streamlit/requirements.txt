@@ -1,0 +1,6 @@
+pandas
+streamlit
+streamlit_extras
+st_star_rating
+surprise
+pathlib
