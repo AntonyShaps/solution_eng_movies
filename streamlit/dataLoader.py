@@ -23,10 +23,11 @@ class movieLoader:
 
     def __init__(self):
         self.movies = []
+        self.ratings = []
         self.key = "352fb6cebe850dcd6a8414d4a54a7abd"
         self.dataPath = "../movies-database/transformedFiles/movieData.csv"
         self.changes = 0
-        self.saveMargin = 10
+        self.saveMargin = 100
 
     def extract_year(self, title):
         match = re.search(r"\((\d{4})\)$", title)
@@ -59,7 +60,6 @@ class movieLoader:
 
         links = pd.read_csv("../movies-database/ml-25m/links.csv")
         ratings = pd.read_csv("../movies-database/ml-25m/ratings.csv")
-
         # Merge movie info with links (left keeps all movies, right would filter)
         movies = pd.merge(mov, links, how="left", on="movieId")
 
@@ -75,15 +75,16 @@ class movieLoader:
 
         # Merge with ratings
         movies = pd.merge(movies, ratings_summary, how="left", on="movieId")
-        movies["img"] = ""        
+        movies["img"] = "" 
 
 
         self.movies = movies
+        self.ratings = ratings
         self.saveMovies()
 
     def checkSave(self):
         self.changes += 1
-        print(f"checking save {self.changes}")
+        #print(f"checking save {self.changes}")
         if self.changes >= self.saveMargin:
             print(f"saving Movies {self.changes}")
             self.saveMovies()

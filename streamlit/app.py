@@ -6,8 +6,7 @@ st.set_page_config(layout="wide", page_title="MovieStream", page_icon="🎬")
 st.markdown("<h1 style='text-align: center;'>🎬 MovieStream</h1>", unsafe_allow_html=True)
 
 mLoader = movieLoader()
-
-
+st.session_state.mLoader = mLoader
 # Placeholder container
 placeholder = st.empty()
 
@@ -18,14 +17,17 @@ with placeholder.container():
 
 # Run your actual loading function
 mLoader.load()
+ratings = pd.read_csv("../movies-database/ml-25m/ratings.csv")
+mLoader.ratings = ratings
 
 # Hide the container
 placeholder.empty()
 
-mLoader.load()
 
-
-
+##Uncoment to load more images
+#for movie in mLoader.movies.itertuples():
+#    if movie.img == "" or pd.isna(movie.img) or pd.isnull(movie.img):
+#        mLoader.loadPicture(movie.movieId, movie.imdbId, movie.tmdbId)
 
 
 
