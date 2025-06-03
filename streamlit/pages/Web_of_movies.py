@@ -4,10 +4,9 @@ import json
 from pathlib import Path
 from surprise import Dataset, Reader, SVD
 import dataLoader
+import time
 
 st.set_page_config(page_title="Graph", page_icon="🕸️")
-
-st.title("Recommendations")
 
 if "mLoader" not in st.session_state:
     st.warning("Please go to homepage to load the data")
@@ -19,7 +18,7 @@ else:
     movies_df =  pd.DataFrame(st.session_state.mLoader.movies)
     ratings_df = pd.DataFrame(st.session_state.mLoader.ratings)
     user_ratings = json.loads(USER_RATINGS_PATH.read_text())
-    ratings_small = ratings_df.sample(10000)
+    ratings_small = ratings_df.sample(50000)
     model_options = ["SVD"]
     selected_model = st.selectbox("Select Recommendation Model", model_options)
     
@@ -28,10 +27,17 @@ else:
     trainset = data.build_full_trainset()
 
     if selected_model == "SVD":
-        model = SVD()
+        model = SVD(
+                    n_factors=50,
+                    n_epochs=50,
+                    lr_all=0.005,
+                    reg_all=0.1,
+                    random_state=42
+                )
     else:
         st.warning("No/Invalid Model Selected.")
         st.stop()
+    start_time = time.time()
     model.fit(trainset)
 
     # Predict ratings for unseen movies
@@ -48,7 +54,9 @@ else:
     top_n = sorted(predictions, key=lambda x: x[1], reverse=True)[:10]
     top_movies = pd.DataFrame(top_n, columns=["movieId", "predicted_rating"])
     top_movies = pd.merge(top_movies, movies_df, on="movieId")
-    
+    end_time = time.time()
+    duration = round(end_time - start_time, 2)
+    st.title(f"Recommendations (⏱️ {duration} sec)")
     for _, row in top_movies.iterrows():
         with st.container():
             cols = st.columns([1, 4])
