@@ -43,7 +43,7 @@ st.text_input(
 )
 
 search_value = st.session_state.get("search_value", "")
-filtered_df = mLoader.movies[mLoader.movies["title"].str.contains(search_value, case=False)] if search_value else mLoader.movies
+filtered_df = mLoader.movies[mLoader.movies["title"].str.contains(search_value, case=False)] if search_value else mLoader.movies.sample(10)
 
 filtered_df.sort_values(by="count", ascending=False, inplace=True)
 
@@ -139,10 +139,31 @@ allTime.sort_values(by="total", ascending=False, inplace=True)
 html = '<div class="movie-container">'
 for movie in allTime.head(10).itertuples():
     html += showMovie(movie)
-
-
 html += '</div>'
 st.html(html)
-st.html("<h2>Currently hot 🌶️🔥</h2>")
+
+
+
+st.html("<h2>Currently hot</h2>")
+currentlyHot = mLoader.movies.copy()
+currentlyHot.sort_values(by="time_adjusted_rating", ascending=False, inplace=True)
+html = '<div class="movie-container">'
+for movie in currentlyHot.head(10).itertuples():
+    html += showMovie(movie)
+html += '</div>'
+st.html(html)
+
+
+for index, row in mLoader.topGenre.head(7).iterrows():
+    g = row['index']
+    st.html(f"<h2>{g .split('_')[1]}</h2>")
+    html = '<div class="movie-container">'
+    bestG = mLoader.movies[mLoader.movies[g] == 1].copy()
+    bestG["total"] = bestG["avgRating"] * bestG["count"]
+    for movie in bestG.sort_values(by="total", ascending=False).head(10).itertuples():
+        html += showMovie(movie)
+    html += '</div>'
+    st.html(html)
+    
 
 

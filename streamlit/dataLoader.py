@@ -2,7 +2,7 @@ import pandas as pd
 import requests
 import re
 import os
-
+from sklearn.preprocessing import MultiLabelBinarizer
 
 
 
@@ -24,6 +24,7 @@ class movieLoader:
     def __init__(self):
         self.movies = []
         self.ratings = []
+        self.topGenre = []
         self.key = "352fb6cebe850dcd6a8414d4a54a7abd"
         self.dataPath = "./dataFiles/movieData.csv"
         self.changes = 0
@@ -46,12 +47,40 @@ class movieLoader:
                     return f"{article} {name}"
         return title
     
+    def extract_genres(self, movieDF):
+        TempGenre = movieDF[["movieId","genres"]]
+        TempGenre["genres"] = TempGenre["genres"].str.split("|")
+
+        
+        mlb = MultiLabelBinarizer()
+        genre_dummies = pd.DataFrame(mlb.fit_transform(TempGenre['genres']), columns=[f"g_{genre}" for genre in mlb.classes_])
+
+
+        result = pd.concat([TempGenre['movieId'], genre_dummies], axis=1)
+        
+        self.topGenre = result.drop(columns=['movieId','g_(no genres listed)']).sum().sort_values(ascending=False)
+        self.topGenre = self.topGenre[self.topGenre > 0].reset_index()
+        self.topGenre.to_csv("./dataFiles/topGenre.csv", index=False, header=True)
+        return result
+    
+    def timeAdjustedRatings(self, ratingsDF):
+        min_date = ratingsDF['timestamp'].min()
+        max_date = ratingsDF['timestamp'].max()
+        ratingsDF['adjusted_timestamp'] = (ratingsDF['timestamp'] - min_date) / (max_date - min_date)
+        ratingsDF['adjusted_rating'] = ratingsDF['rating'] * ratingsDF['adjusted_timestamp']
+        ratingsDF = ratingsDF.groupby("movieId").agg(
+            time_adjusted_rating=("adjusted_rating", "mean")
+        ).reset_index()
+        return ratingsDF
+    
 
     def load(self):
         if os.path.exists(self.dataPath):
             self.movies = pd.read_csv(self.dataPath)
             if self.ratings == []:
                 self.ratings = pd.read_csv("../movies-database/ml-25m/ratings.csv")
+            if self.topGenre == []:
+                self.topGenre = pd.read_csv("./dataFiles/topGenre.csv")
             return
 
         
@@ -81,8 +110,8 @@ class movieLoader:
         movies["img"] = "" 
         movies["img"] = movies["img"].astype("object")
 
-        TempGenre = movies[["movieId", "genre"]]
-        TempGenre["genre"] = TempGenre["genre"].split()
+        movies = movies.merge(self.extract_genres(movies), how="left", on="movieId")
+        movies = movies.merge(self.timeAdjustedRatings(ratings), how="left", on="movieId")
 
         self.movies = movies
         self.ratings = ratings
