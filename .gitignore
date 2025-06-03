@@ -178,3 +178,6 @@ movies-database/
 movies-database.*
 movies_ratings_tags_missingids.csv
 */dataFiles/
+
+# Large NeuMF model files
+NeuMF_model/*.pth
