@@ -54,7 +54,7 @@ class movieLoader:
                 self.ratings = pd.read_csv("../movies-database/ml-25m/ratings.csv")
             return
 
-        # Load raw data
+        
         mov = pd.read_csv("../movies-database/ml-25m/movies.csv")
         mov[["title", "year"]] = mov["title"].apply(self.extract_year).apply(pd.Series)
         mov["title"] = mov["title"].apply(self.normalize_title)
@@ -81,6 +81,8 @@ class movieLoader:
         movies["img"] = "" 
         movies["img"] = movies["img"].astype("object")
 
+        TempGenre = movies[["movieId", "genre"]]
+        TempGenre["genre"] = TempGenre["genre"].split()
 
         self.movies = movies
         self.ratings = ratings

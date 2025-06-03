@@ -7,7 +7,7 @@ st.markdown("<h1 style='text-align: center;'>🎬 MovieStream</h1>", unsafe_allo
 
 mLoader = movieLoader()
 st.session_state.mLoader = mLoader
-# Placeholder container
+
 placeholder = st.empty()
 
 # Show loading message/GIF in the placeholder
@@ -17,8 +17,7 @@ with placeholder.container():
 
 # Run your actual loading function
 mLoader.load()
-#ratings = pd.read_csv("../movies-database/ml-25m/ratings.csv")
-#mLoader.ratings = ratings
+
 
 # Hide the container
 placeholder.empty()
@@ -93,9 +92,8 @@ st.markdown("""
 </style>
 """, unsafe_allow_html=True)
 
-# Build HTML
-html = '<div class="movie-container">'
-for movie in filtered_df.head(10).itertuples():
+
+def showMovie(movie):
     year = str(int(movie.year)) if not pd.isna(movie.year) else "-"
     rating = f"⭐ {round(movie.avgRating, 1)}" if not pd.isna(movie.avgRating) else "unrated"
     if movie.img == "" or pd.isna(movie.img) or pd.isnull(movie.img):
@@ -103,7 +101,7 @@ for movie in filtered_df.head(10).itertuples():
     else:
         img_url = movie.img
 
-    html += f"""
+    div = f"""
     <div class="movie-card">
         <div class="movie-img" style="background-image: url('{img_url}');"></div>
         <div class="movie-content">
@@ -116,8 +114,35 @@ for movie in filtered_df.head(10).itertuples():
     </div>
     """
 
+    return div
+
+# Build HTML
+html = '<div class="movie-container">'
+for movie in filtered_df.head(10).itertuples():
+    html += showMovie(movie)
+
 
 html += '</div>'
 
-# Render it
+
 st.html(html)
+
+
+
+st.html("<h2>All time classics 🏆</h2>")
+
+allTime = mLoader.movies.copy()
+
+allTime["total"] = allTime["avgRating"] * allTime["count"]
+
+allTime.sort_values(by="total", ascending=False, inplace=True)
+html = '<div class="movie-container">'
+for movie in allTime.head(10).itertuples():
+    html += showMovie(movie)
+
+
+html += '</div>'
+st.html(html)
+st.html("<h2>Currently hot 🌶️🔥</h2>")
+
+
