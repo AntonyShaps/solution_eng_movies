@@ -1,26 +1,59 @@
 import streamlit as st
 import pandas as pd
 from dataLoader import movieLoader
+from surprise import Dataset, Reader, SVD, SVDpp
+import queue
+import time
+
+RESULTS = queue.Queue() 
+SUPPORTED_ALGOS = {"SVD": SVD,"SVD++":SVDpp}
+
+@st.cache_resource(show_spinner="Training baseline models...")
+def train_baselines(df):
+    reader   = Reader(rating_scale=(0.5, 5))
+    trainset = Dataset.load_from_df(
+        df[['userId', 'movieId', 'rating']], reader
+    ).build_full_trainset()
+
+    models = {}
+    for name, Algo in SUPPORTED_ALGOS.items():
+        algo = Algo(random_state=42)
+        algo.fit(trainset)
+        models[name] = algo
+    return models
 
 st.set_page_config(layout="wide", page_title="MovieStream", page_icon="🎬")
 st.markdown("<h1 style='text-align: center;'>🎬 MovieStream</h1>", unsafe_allow_html=True)
 
-mLoader = movieLoader()
-st.session_state.mLoader = mLoader
+if "mLoader" not in st.session_state:
+    placeholder = st.empty()
+    mLoader = movieLoader()
+    # Show loading message/GIF in the placeholder
+    with placeholder.container():
+        st.markdown("### Loading movie data...")
+        st.markdown("<img src='https://media.giphy.com/media/y1ZBcOGOOtlpC/giphy.gif' width='200'>", unsafe_allow_html=True)
+    mLoader.load()
+    # Hide the container
+    placeholder.empty()
+    st.session_state.mLoader = mLoader
+else:
+    mLoader = st.session_state.mLoader
 
-placeholder = st.empty()
+if "baselines" not in st.session_state:
+    ratings_small = pd.DataFrame(mLoader.ratings).sample(1000000)
+    start_time = time.time()
+    st.session_state.baselines = train_baselines(ratings_small)
+    end_time = time.time()
+    duration = round(end_time - start_time, 2)
+    st.session_state.models_ready = True
+    
+    st.success(f"✅ Model trained and cached in ⏱️{duration}s")
+else:
+    if st.session_state.baselines:
+        st.success("✅ Cached models ready: " + ", ".join(st.session_state.baselines.keys()))
+    else:
+        st.warning("⚠️ No models found in cache.")
 
-# Show loading message/GIF in the placeholder
-with placeholder.container():
-    st.markdown("### Loading movie data...")
-    st.markdown("<img src='https://media.giphy.com/media/y1ZBcOGOOtlpC/giphy.gif' width='200'>", unsafe_allow_html=True)
-
-# Run your actual loading function
-mLoader.load()
-
-
-# Hide the container
-placeholder.empty()
 
 
 ##Uncoment to load more images
