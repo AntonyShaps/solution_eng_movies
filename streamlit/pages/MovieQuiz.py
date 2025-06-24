@@ -113,5 +113,4 @@ if st.checkbox("✅ Show Your Ratings"):
     st.dataframe(pd.DataFrame(rated))
 
 # Button to get recommendations
-if st.button("🎯 Get Recommendations"):
-    switch_page("web of movies")
+st.page_link("pages/Web_of_movies.py", label="👉 Go to recommendations", icon="🎬")

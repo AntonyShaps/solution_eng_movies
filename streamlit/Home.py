@@ -1,5 +1,6 @@
 import streamlit as st
 import pandas as pd
+import numpy as np
 from dataLoader import movieLoader
 from surprise import Dataset, Reader, SVD, SVDpp
 import queue
