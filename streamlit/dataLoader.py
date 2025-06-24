@@ -1,4 +1,5 @@
 import pandas as pd
+import numpy as np
 import requests
 import re
 import os
@@ -12,8 +13,8 @@ class userLoader:
     def __init__(self):
         self.currentUser = ""
         self.availableUsers = []
-        self.userFile = "../movies-database/transformedFiles/userList.csv"
-        self.userRating = "../movies-database/transformedFiles/userRating.csv"
+        self.userFile = "./movies-database/transformedFiles/userList.csv"
+        self.userRating = "./movies-database/transformedFiles/userRating.csv"
 
     def loadUser(self):
         self.availableUsers = pd.read_csv(self.userFile)
@@ -78,19 +79,19 @@ class movieLoader:
         if os.path.exists(self.dataPath):
             self.movies = pd.read_csv(self.dataPath)
             if self.ratings == []:
-                self.ratings = pd.read_csv("../movies-database/ml-25m/ratings.csv")
+                self.ratings = pd.read_csv("./movies-database/ml-25m/ratings.csv")
             if self.topGenre == []:
                 self.topGenre = pd.read_csv("./dataFiles/topGenre.csv")
             return
 
         
-        mov = pd.read_csv("../movies-database/ml-25m/movies.csv")
+        mov = pd.read_csv("./movies-database/ml-25m/movies.csv")
         mov[["title", "year"]] = mov["title"].apply(self.extract_year).apply(pd.Series)
         mov["title"] = mov["title"].apply(self.normalize_title)
 
 
-        links = pd.read_csv("../movies-database/ml-25m/links.csv")
-        ratings = pd.read_csv("../movies-database/ml-25m/ratings.csv")
+        links = pd.read_csv("./movies-database/ml-25m/links.csv")
+        ratings = pd.read_csv("./movies-database/ml-25m/ratings.csv")
 
         # Merge movie info with links (left keeps all movies, right would filter)
         movies = pd.merge(mov, links, how="left", on="movieId")
