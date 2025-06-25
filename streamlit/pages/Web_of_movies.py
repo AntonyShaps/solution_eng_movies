@@ -11,7 +11,7 @@ st.set_page_config(page_title="Graph", page_icon="🕸️")
 if "mLoader" not in st.session_state:
     st.warning("Please go to homepage to load the data")
 else:
-    USER_RATINGS_PATH = Path("user_ratings.json")
+    USER_RATINGS_PATH = Path("streamlit/user_ratings.json")
     if not USER_RATINGS_PATH.exists():
         st.warning("No user ratings found. Please rate some movies first.")
         st.stop()
