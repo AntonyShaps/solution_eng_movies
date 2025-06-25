@@ -79,7 +79,27 @@ if "rated_sample" not in st.session_state:
 # UI: search box
 # --------------------------------------------------
 search_query = st.text_input("🔍 Search movies to rate (enter ≥3 characters)")
+def generate_random_sample():
+    rated_ids = set(int(mid) for mid in st.session_state.user_ratings.keys())
+    previously_shown_ids = set(st.session_state.rated_sample["movieId"]) if "rated_sample" in st.session_state else set()
+    exclude_ids = rated_ids.union(previously_shown_ids)
 
+    # Filter movies that have images and are not excluded
+    candidates = movies_df[
+        (movies_df["img"].notna()) & 
+        (movies_df["img"] != "") & 
+        (~movies_df["movieId"].isin(exclude_ids))
+    ]
+
+    if len(candidates) == 0:
+        st.warning("No more new movies to sample!")
+        return
+
+    st.session_state.rated_sample = candidates.sample(5, random_state=None).reset_index(drop=True)
+
+# Button to generate new random sample excluding rated and previously shown
+if st.button("🎲 Generate New Random Picks"):
+    generate_random_sample()
 if search_query and len(search_query) >= 3:
     # Case‑insensitive substring match on title
     hits = movies_df[movies_df.title.str.contains(search_query, case=False, na=False)]
@@ -98,6 +118,7 @@ else:
 # Button to reset ratings
 if st.button("🔄 Reset Ratings"):
     st.session_state.user_ratings = {}
+    USER_RATINGS_PATH.write_text("{}")
     st.success("User ratings have been reset!")
 
 # Show summary of user ratings
