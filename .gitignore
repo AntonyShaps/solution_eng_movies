@@ -181,3 +181,4 @@ movies_ratings_tags_missingids.csv
 
 # Large NeuMF model files
 models/NeuMF_model/*.pth
+EDA/03.test_split.ipynb
