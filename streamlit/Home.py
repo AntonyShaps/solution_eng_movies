@@ -2,14 +2,17 @@ import streamlit as st
 import pandas as pd
 import numpy as np
 from dataLoader import movieLoader
+from NeuMF_Loader import initialize_NeuMF_model
 from surprise import Dataset, Reader, SVD, SVDpp
 import queue
 import time
+import os
 
 RESULTS = queue.Queue() 
 SUPPORTED_ALGOS = {"SVD": SVD,"SVD++":SVDpp}
 
-@st.cache_resource(show_spinner="Training baseline models...")
+
+@st.cache_resource(show_spinner="Training baseline SVD models...")
 def train_baselines(df):
     reader   = Reader(rating_scale=(0.5, 5))
     trainset = Dataset.load_from_df(
@@ -22,6 +25,13 @@ def train_baselines(df):
         algo.fit(trainset)
         models[name] = algo
     return models
+
+@st.cache_resource(show_spinner="Loading NeuMF4 model...")
+def initialize_neunmf_model_cached():
+    #st.info("Starting actual NeuMF4 model loading (this will take ~2 minutes)...")
+    NeuMF4, datasetNeuMF = initialize_NeuMF_model()
+
+    return NeuMF4, datasetNeuMF
 
 st.set_page_config(layout="wide", page_title="MovieStream", page_icon="🎬")
 st.markdown("<h1 style='text-align: center;'>🎬 MovieStream</h1>", unsafe_allow_html=True)
@@ -48,12 +58,41 @@ if "baselines" not in st.session_state:
     duration = round(end_time - start_time, 2)
     st.session_state.models_ready = True
     
-    st.success(f"✅ Model trained and cached in ⏱️{duration}s")
+    st.success(f"✅ SVD models trained and cached in ⏱️{duration}s")
 else:
     if st.session_state.baselines:
         st.success("✅ Cached models ready: " + ", ".join(st.session_state.baselines.keys()))
     else:
         st.warning("⚠️ No models found in cache.")
+
+
+
+
+if "NeuMF4_loaded" not in st.session_state:
+    st.session_state.NeuMF4_loaded = False
+    
+    status_placeholder = st.empty()
+
+    start_time_actual_load = time.time()
+    try:
+        NeuMF4, datasetNeuMF = initialize_neunmf_model_cached()
+        st.session_state.NeuMF4 = NeuMF4
+        st.session_state.datasetNeuMF = datasetNeuMF
+        st.session_state.NeuMF4_loaded = True
+        
+        duration_actual_load = round(time.time() - start_time_actual_load, 2)
+        status_placeholder.success(f"✅ NeuMF4 model loaded successfully in {duration_actual_load}s!")
+        
+    except Exception as e:
+        st.error(f"❌ Error loading NeuMF4 model: {e}")
+        st.session_state.NeuMF4_loaded = False
+        status_placeholder.error("Loading failed.")
+
+else:
+    if st.session_state.NeuMF4_loaded:
+        st.success("✅ NeuMF4 model already loaded and ready to use")
+    else:
+        st.warning("⚠️ NeuMF4 model failed to load previously.")
 
 
 
