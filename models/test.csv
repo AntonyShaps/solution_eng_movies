@@ -1,0 +1,21 @@
+,userId,movieId,rating,timestamp,title,genres,g_(no genres listed),g_Action,g_Adventure,g_Animation,g_Children,g_Comedy,g_Crime,g_Documentary,g_Drama,g_Fantasy,g_Film-Noir,g_Horror,g_IMAX,g_Musical,g_Mystery,g_Romance,g_Sci-Fi,g_Thriller,g_War,g_Western
+0,38,47,4.0,1417643695,Seven (a.k.a. Se7en),Mystery|Thriller,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,1,0,0
+1,38,50,4.5,1417640243,The Usual Suspects,Crime|Mystery|Thriller,0,0,0,0,0,0,1,0,0,0,0,0,0,0,1,0,0,1,0,0
+2,38,105,4.5,1349689606,The Bridges of Madison County,Drama|Romance,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,1,0,0,0,0
+3,38,110,3.0,1417643698,Braveheart,Action|Drama|War,0,1,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,1,0
+4,38,260,4.5,1349689831,Star Wars: Episode IV - A New Hope,Action|Adventure|Sci-Fi,0,1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0
+5,38,293,3.0,1417643716,Léon: The Professional (a.k.a. The Professional) (Léon),Action|Crime|Drama|Thriller,0,1,0,0,0,0,1,0,1,0,0,0,0,0,0,0,0,1,0,0
+6,38,296,4.5,1417643625,Pulp Fiction,Comedy|Crime|Drama|Thriller,0,0,0,0,0,1,1,0,1,0,0,0,0,0,0,0,0,1,0,0
+7,38,318,4.5,1417640226,The Shawshank Redemption,Crime|Drama,0,0,0,0,0,0,1,0,1,0,0,0,0,0,0,0,0,0,0,0
+8,38,345,4.0,1349689585,"The Adventures of Priscilla, Queen of the Desert",Comedy|Drama,0,0,0,0,0,1,0,0,1,0,0,0,0,0,0,0,0,0,0,0
+9,38,527,4.0,1417640240,Schindler's List,Drama|War,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,1,0
+10,38,541,4.0,1417643630,Blade Runner,Action|Sci-Fi|Thriller,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,1,0,0
+11,38,593,3.5,1417643613,The Silence of the Lambs,Crime|Horror|Thriller,0,0,0,0,0,0,1,0,0,0,0,1,0,0,0,0,0,1,0,0
+12,38,745,3.0,1349689795,Wallace & Gromit: A Close Shave,Animation|Children|Comedy,0,0,0,1,1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+13,38,750,3.5,1417643598,Dr. Strangelove or: How I Learned to Stop Worrying and Love the Bomb,Comedy|War,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,1,0
+14,38,1080,3.5,1417643861,Monty Python's Life of Brian,Comedy,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+15,38,1089,3.5,1417643648,Reservoir Dogs,Crime|Mystery|Thriller,0,0,0,0,0,0,1,0,0,0,0,0,0,0,1,0,0,1,0,0
+16,38,1136,4.0,1417643616,Monty Python and the Holy Grail,Adventure|Comedy|Fantasy,0,0,1,0,0,1,0,0,0,1,0,0,0,0,0,0,0,0,0,0
+17,38,1193,4.0,1417640235,One Flew Over the Cuckoo's Nest,Drama,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0
+18,38,1196,4.5,1417643610,Star Wars: Episode V - The Empire Strikes Back,Action|Adventure|Sci-Fi,0,1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0
+19,38,1197,2.5,1349689855,The Princess Bride,Action|Adventure|Comedy|Fantasy|Romance,0,1,1,0,0,1,0,0,0,1,0,0,0,0,0,1,0,0,0,0

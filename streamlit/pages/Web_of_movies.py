@@ -2,7 +2,12 @@ import streamlit as st
 import pandas as pd
 import json
 from pathlib import Path
-from surprise import Dataset, Reader, SVD
+try:
+    from surprise import Dataset, Reader, SVD
+except ImportError:
+    import sys
+    sys.path.append('..')
+    from mock_surprise import Dataset, Reader, SVD
 import dataLoader
 import time
 

@@ -27,7 +27,7 @@ class movieLoader:
         self.ratings = []
         self.topGenre = []
         self.key = "352fb6cebe850dcd6a8414d4a54a7abd"
-        self.dataPath = "./dataFiles/movieData.csv"
+        self.dataPath = "../dataFiles/movieData.csv"
         self.changes = 0
         self.saveMargin = 100
 
@@ -79,22 +79,23 @@ class movieLoader:
         if os.path.exists(self.dataPath):
             self.movies = pd.read_csv(self.dataPath)
             if self.ratings == []:
-                self.ratings = pd.read_csv("./movies-database/ml-25m/ratings.csv")
+                self.ratings = pd.read_csv("../validation_dataset.csv")
             if self.topGenre == []:
-                self.topGenre = pd.read_csv("./dataFiles/topGenre.csv")
+                self.topGenre = pd.read_csv("../dataFiles/topGenre.csv")
             return
 
         
-        mov = pd.read_csv("./movies-database/ml-25m/movies.csv")
+        mov = pd.read_csv("../dataFiles/movieData.csv")
         mov[["title", "year"]] = mov["title"].apply(self.extract_year).apply(pd.Series)
         mov["title"] = mov["title"].apply(self.normalize_title)
 
 
-        links = pd.read_csv("./movies-database/ml-25m/links.csv")
-        ratings = pd.read_csv("./movies-database/ml-25m/ratings.csv")
+        # Use existing movieData.csv which already has the required columns
+        # links = pd.read_csv("./movies-database/ml-25m/links.csv")  # Not needed
+        ratings = pd.read_csv("../validation_dataset.csv")
 
-        # Merge movie info with links (left keeps all movies, right would filter)
-        movies = pd.merge(mov, links, how="left", on="movieId")
+        # Use movieData directly as it already has all required columns
+        movies = mov.copy()
 
 
 

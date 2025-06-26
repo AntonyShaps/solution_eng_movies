@@ -3,7 +3,12 @@ import pandas as pd
 import json
 from streamlit_extras.switch_page_button import switch_page
 from streamlit_extras.stylable_container import stylable_container
-from streamlit_star_rating import st_star_rating
+try:
+    from streamlit_star_rating import st_star_rating
+except ImportError:
+    import sys
+    sys.path.append('..')
+    from mock_streamlit_star_rating import st_star_rating
 from pathlib import Path
 
 # File to save ratings
