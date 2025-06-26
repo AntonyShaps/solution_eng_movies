@@ -1,5 +1,19 @@
 # solution_eng_movies
 
+## Guidelines to rune the DemoApp
+
+1. clone repo
+2. Add to '/solution_eng_movies' folder unzipped file "movies-database" from https://drive.google.com/drive/folders/1PtwDEUqqSup22Auam0fT7G2Jvils1N2a
+3. Add to '/solution_eng_movies/models/NeuMF_model' 2 files from https://drive.google.com/drive/folders/1LCJIj_h_OPtl042bgSCGuAr35CKNRRCs?usp=drive_link
+4. use commadns:
+   ```bash
+   cd solution_eng_movies
+   conda create -n movie_env python=3.10 -y
+   conda activate movie_env
+   pip install -r requirements.txt
+   streamlit run streamlit/Home.py
+   ```
+
 ## Guidelines on Working in the Repo
 
 1. Move your archive (`movies-database.zip`) into the folder with the Git repository.
@@ -15,20 +29,5 @@
    git merge --no-ff <branch_name>
    git push origin main
    ````
-  
-    ### project structure
-    ```bash
-    solution_eng_movies/ml-25m
-    ├── README.md
-    ├── requirements.txt
-    ├── .gitignore
-    ├── yourSolution.ipynb
-    ├── movies-database/
-    │   ├── movies.csv
-    │   ├── ratings.csv
-    │   └── ... (other database files)
-    ├── movies-database.zip
-    ```
-
 
 
